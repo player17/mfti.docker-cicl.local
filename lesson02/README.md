@@ -39,6 +39,7 @@ https://docs.gitlab.com/runner/install/windows.html
 >>> `Win+R services.msc - найти проверить`
 >>>> `gitlab-runner.exe stop`
 >>>>> `gitlab-runner.exe uninstall`
+>>>>> `sc delete gitlab-runner`
 
 ### Config config.toml
 concurrent = 1
@@ -50,7 +51,7 @@ check_interval = 0
 [[runners]]
   name = "win"
   url = "http://gitlab.local/"
-  token = "C2ycs_Uj_WzDjvdpQ8AF"
+  token = "C2y12c8978798jvdpQ8AF"
   executor = "shell"
   shell = "pwsh"
   [runners.custom_build_dir]
@@ -63,3 +64,13 @@ check_interval = 0
 sudo docker network create gitlab-network
 sudo docker network connect gitlab-network gitlab
 sudo docker network connect gitlab-network gitlab-runner
+
+### Пример docker-compose.yml
+http://snakeproject.ru/rubric/article.php?art=gitlab_docker_03_02_2022
+https://www.youtube.com/watch?v=F6MBLkUrIQ8&t=3s
+
+
+
+
+
+
