@@ -1,7 +1,9 @@
 http://gitlab.local/
+### Проброшенные папки
+\\wsl$\docker-desktop-data\data\docker\volumes\
 
 ### CI/CD and Runner on Window
-#### CI/CD instal on Windows
+#### CI/CD start or install on Windows
 https://docs.gitlab.com/ee/install/docker.html
 https://www.youtube.com/watch?v=MEUD4SsMqOs
 docker run --name gitlab --detach \
@@ -14,6 +16,10 @@ docker run --name gitlab --detach \
   --volume gitlab-logs:/var/log/gitlab \
   --volume gitlab-data:/var/opt/gitlab \
   --shm-size 256m gitlab/gitlab-ee:latest
+
+### Пароль админка
+root
+`docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password`
 
 #### Runner install on Window 
 https://www.youtube.com/watch?v=KzjnZSOm_Uo
