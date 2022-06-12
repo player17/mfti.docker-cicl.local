@@ -46,6 +46,7 @@ https://docs.gitlab.com/runner/install/windows.html
 >>>> `gitlab-runner.exe stop`
 >>>>> `gitlab-runner.exe uninstall`
 >>>>> `sc delete gitlab-runner`
+>>>>>> `Папка с билдами Runner C:\GitLab-Runner\builds\`
 
 ### Config config.toml
 concurrent = 1
@@ -78,4 +79,4 @@ sudo docker network connect gitlab-network gitlab-runner
 
 
 
-
+02-48

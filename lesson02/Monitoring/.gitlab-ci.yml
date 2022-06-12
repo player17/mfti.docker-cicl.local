@@ -1,9 +1,93 @@
-job:
-    script:
-        - $file = Get-Content "file1.txt"
-        - $containsWord = $file | %{$_ -match "Hello"}
-        - if ($containsWord -contains $true) {
-          Write-Host $true
-          } else {
-          Write-Host $false
-          }
+image: alpine
+
+stages:
+  - check_txt
+  - check_unix_cmd
+  - output_txt
+  - create_time_file
+  - check_cache
+
+cache:
+  paths:
+    - DirCache
+
+variables:
+  TEST_STR_INPUT: "TEST variable TEST"
+
+job_hello:
+  script:
+    - $file = Get-Content "file1.txt"
+    - $str = "Hello"
+    - $containsWord = $file | %{$_ -match $str}
+    - if ($containsWord -contains $true) {
+      Write-Host "$true - str $str"
+      } else {
+      Write-Error -Message "In $file not found str $str"
+      }
+  stage: check_txt
+  tags:
+    - win
+
+job_hello2:
+  script:
+    - $file = Get-Content "file1.txt"
+    - $str = "Hello2"
+    - $containsWord = $file | %{$_ -match $str}
+    - if ($containsWord -contains $true) {
+      Write-Host "$true - str $str"
+      } else {
+      Write-Error -Message "In $file not found str $str"
+      }
+  stage: check_txt
+  allow_failure: true
+  tags:
+    - win
+
+job_unix:
+  image: ubuntu
+  script: wsl free -mh
+  stage: check_unix_cmd
+  allow_failure: true
+  tags:
+    - win
+    - run
+
+job_str_hello:
+  variables:
+    TEST_VAR: "All jobs can use this variable's value"
+  script:
+    - cat file1.txt
+    - echo "$TEST_VAR" and "$TEST_STR_INPUT"
+  stage: output_txt
+  tags:
+    - run
+
+job_create_time_file:
+  stage: create_time_file
+  before_script:
+    - echo 'Next step the script ...'
+  script:
+    - New-Item -Path . -Name "testfile1.txt" -ItemType "file" -Force -Value "test str file"
+    - New-Item -Path '.\DirCache\' -ItemType Directory -Force
+    - Copy-Item -Path '.\testfile1.txt' -Destination '.\DirCache\' -Force
+  after_script:
+    - echo '... End step after the script'
+  artifacts:
+    paths:
+      - testfile1.txt
+    expire_in: 1 hour
+  tags:
+    - win
+
+job_check_cache:
+  stage: check_cache
+  script:
+    - $filePath = '.\DirCache\testfile1.txt'
+    - $fileChek = Test-Path -Path $filePath
+    - if ($fileChek) {
+        $fileStr = Get-Content $filePath; Write-host "file exist - $fileStr"
+      } else {
+        Write-Error -Message "Not found - $filePath"
+      }
+  tags:
+    - win
