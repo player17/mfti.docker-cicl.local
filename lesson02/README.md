@@ -5,6 +5,9 @@ http://gitlab.local/
 ### Проброшенные папки
 \\wsl$\docker-desktop-data\data\docker\volumes\
 
+### Локальные паки через WSL
+cd /mnt/d
+
 ### CI/CD and Runner on Window
 #### CI/CD start or install on Windows
 https://docs.gitlab.com/ee/install/docker.html

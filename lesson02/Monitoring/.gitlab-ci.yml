@@ -1,0 +1,9 @@
+job:
+    script:
+        - $file = Get-Content "file1.txt"
+        - $containsWord = $file | %{$_ -match "Hello"}
+        - if ($containsWord -contains $true) {
+          Write-Host $true
+          } else {
+          Write-Host $false
+          }
