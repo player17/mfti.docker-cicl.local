@@ -1,4 +1,7 @@
 http://gitlab.local/
+### Старт проекта через docker-compose.yml
+> `docker-compose up -d`
+
 ### Проброшенные папки
 \\wsl$\docker-desktop-data\data\docker\volumes\
 
@@ -66,10 +69,9 @@ sudo docker network connect gitlab-network gitlab
 sudo docker network connect gitlab-network gitlab-runner
 
 ### Пример docker-compose.yml
-http://snakeproject.ru/rubric/article.php?art=gitlab_docker_03_02_2022
-https://www.youtube.com/watch?v=F6MBLkUrIQ8&t=3s
-
-
+> `http://snakeproject.ru/rubric/article.php?art=gitlab_docker_03_02_2022`
+> `https://github.com/ElisDN/demo-project-manager/`
+> `docker-compose up -d`
 
 
 

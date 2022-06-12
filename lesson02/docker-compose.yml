@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  gitlab:
+    build:
+      context: .
+      shm_size: '256m'
+    hostname: gitlab.local
+    restart: always
+    environment:
+      DOCKER_HOST: 'tcp://docker:2376'
+      DOCKER_CERT_PATH: '/certs/client'
+      DOCKER_TLS_VERIFY: 1
+      COMPOSE_CONVERT_WINDOWS_PATHS: 1
+    ports:
+      - "80:80"
+      - "22:22"
+      - "443:443"
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+volumes:
+  gitlab-config:
+    external: true
+  gitlab-logs:
+    external: true
+  gitlab-data:
+    external: true
