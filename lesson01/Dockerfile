@@ -21,7 +21,9 @@ RUN chown ${varUser} /home/${varUser}/entrypoint.sh && \
 USER ${varUser}
 WORKDIR /home/${varUser}
 RUN echo ${USER} && whoami && pwd
-RUN echo 'Hello test'
+RUN echo 'Login: docker login gitlab.local/gitlab-instance-eaf8c3b5/Monitoring/container_registry'
+RUN echo 'Build: docker build -t registry.gitlab.local/gitlab-instance-eaf8c3b5/monitoring/test-contener .'
+RUN echo 'Push: docker push registry.gitlab.local/gitlab-instance-eaf8c3b5/monitoring/test-contener'
 
 # Запуск исполняемого файла в контейнере
 ENTRYPOINT ["/home/noroot/entrypoint.sh"]

@@ -1,4 +1,7 @@
 http://gitlab.local/
+http://gitlab.local.de/
+https://gitlab.local/
+https://gitlab.local.de/
 ### Старт проекта через docker-compose.yml
 > `docker-compose up -d`
 
@@ -25,11 +28,16 @@ docker run --name gitlab --detach \
 
 ### Пароль админка
 root
-`docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password`
+`docker ps`
+`docker exec -it lesson02-gitlab-1 grep 'Password:' /etc/gitlab/initial_root_password`
 
 #### Runner install on Window 
 https://www.youtube.com/watch?v=KzjnZSOm_Uo
 https://docs.gitlab.com/runner/install/windows.html
+https://www.youtube.com/watch?v=jAIhhULc7YA
+https://stackoverflow.com/questions/44458410/gitlab-ci-runner-ignore-self-signed-certificate
+- https://www.youtube.com/watch?v=jAIhhULc7YA
+  - https://github.com/RomNero/YouTube-Infos/blob/main/03-GitLabCICD.md
 
 > `https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-windows-amd64.exe`
 >> `переименовать в c:\GitLab-Runner\gitlab-runne.exe `
@@ -37,7 +45,11 @@ https://docs.gitlab.com/runner/install/windows.html
 > `cmd от administrator`
 >> `cd c:\GitLab-Runner\`
 >>> `gitlab-runner.exe register`
->>>> `... Enter an executor: Shell`
+>>> `gitlab-runner.exe register --tls-ca-file="c:\GitLab-Runner\sert.pem"` // регистрация со своим сертификатом (серт выгрузить с сайта)
+>>>> `wsl openssl x509 -in sert.cer -text`
+>>>> `wsl openssl x509 -outform der -in sert.cer -out sert.pem`
+>>>> `https://www.leaderssl.ru/tools/ssl_converter` // конвертация онлайн сертификатов, если не будет рабоать правильно
+>>>>> `... Enter an executor: Shell`
 
 > `gitlab-runner.exe install`
 >> `gitlab-runner.exe start`
@@ -88,8 +100,24 @@ check_interval = 0
 - `docker exec -it lesson02-gitlab-1 /bin/bash`  --> `cd etc/gitlab/` // Конфигируруем (см.видео), можно также через проброшеные volume \\wsl$\docker-desktop-data\data\docker\volumes\gitlab-config`
 - `gitlab.rb` // Конфигурирование GitLab
   - `https://docs.gitlab.com/omnibus/settings/ssl.html#lets-encrypt-integration`
-  - `external_url 'https://registry.gitlab.local' ... и другие параментры`
+  - `external_url 'https://registry.gitlab.local' ... и другие параметры`
   - `docker exec -it lesson02-gitlab-1 /bin/bash`
     - `gitlab-ctl reconfigure`
     - `gitlab-ctl renew-le-certs`
     - `https://www.youtube.com/watch?v=Zx1MF5fDjzc` // установка сертификата в центр дов.источников
+ 
+### Настройка локальных сертифкатов
+- https://habr.com/ru/company/globalsign/blog/435476/
+- https://www.youtube.com/watch?v=DyfyYRst3bg
+  - 1. openssl genrsa -des3 -out server.key.secure 2048
+  - 2. openssl rsa -in server.key.secure -out server.key
+  - 3. openssl req -new -key server.key -out server.csr
+  - 4. openssl x509 -req -days 9365 -in server.csr -signkey server.key -out server.crt
+
+- https://www.youtube.com/watch?v=jAIhhULc7YA&t=2129s
+
+02 в
+03-26 - прогон тестов на контейнере из репо gitlab, необходимо ранер настроить на докер и его сконфигурировать
+https://www.youtube.com/watch?v=jAIhhULc7YA&t=1691s
+
+
