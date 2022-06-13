@@ -68,15 +68,28 @@ check_interval = 0
     [runners.cache.azure]
 
 #### Создать сеть между контейнерами
-sudo docker network create gitlab-network
-sudo docker network connect gitlab-network gitlab
-sudo docker network connect gitlab-network gitlab-runner
+- `sudo docker network create gitlab-network`
+- `sudo docker network connect gitlab-network gitlab`
+- `sudo docker network connect gitlab-network gitlab-runner`
 
-### Пример docker-compose.yml
-> `http://snakeproject.ru/rubric/article.php?art=gitlab_docker_03_02_2022`
-> `https://github.com/ElisDN/demo-project-manager/`
-> `docker-compose up -d`
+### Пример docker-compose.yml для  CI/CD
+- `http://snakeproject.ru/rubric/article.php?art=gitlab_docker_03_02_2022`
+- `https://github.com/ElisDN/demo-project-manager/`
+- `docker-compose up -d`
+- `docker-compose restart`
 
+### Переменные окружения env CI/CD
+> `script: 'ls env:' // Все переменные с префиксом CI_`
 
-
-02-48
+### Локальный Dokerhub (Container registry)
+- `https://www.youtube.com/watch?v=G-WmX1um5cc`
+- `https://www.youtube.com/watch?v=n_21ya2MoKg`
+- `docker ps`
+- `docker exec -it lesson02-gitlab-1 /bin/bash`  --> `cd etc/gitlab/` // Конфигируруем (см.видео), можно также через проброшеные volume \\wsl$\docker-desktop-data\data\docker\volumes\gitlab-config`
+- `gitlab.rb` // Конфигурирование GitLab
+  - `https://docs.gitlab.com/omnibus/settings/ssl.html#lets-encrypt-integration`
+  - `external_url 'https://registry.gitlab.local' ... и другие параментры`
+  - `docker exec -it lesson02-gitlab-1 /bin/bash`
+    - `gitlab-ctl reconfigure`
+    - `gitlab-ctl renew-le-certs`
+    - `https://www.youtube.com/watch?v=Zx1MF5fDjzc` // установка сертификата в центр дов.источников

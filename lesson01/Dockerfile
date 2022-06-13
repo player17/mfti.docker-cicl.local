@@ -21,6 +21,7 @@ RUN chown ${varUser} /home/${varUser}/entrypoint.sh && \
 USER ${varUser}
 WORKDIR /home/${varUser}
 RUN echo ${USER} && whoami && pwd
+RUN echo 'Hello test'
 
 # Запуск исполняемого файла в контейнере
 ENTRYPOINT ["/home/noroot/entrypoint.sh"]

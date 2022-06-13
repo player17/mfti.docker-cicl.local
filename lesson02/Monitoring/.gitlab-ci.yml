@@ -29,6 +29,8 @@ job_hello:
     - win
 
 job_hello2:
+  only:
+    - main
   script:
     - $file = Get-Content "file1.txt"
     - $str = "Hello2"
@@ -44,6 +46,8 @@ job_hello2:
     - win
 
 job_unix:
+  only:
+    - main
   image: ubuntu
   script: wsl free -mh
   stage: check_unix_cmd
@@ -53,6 +57,8 @@ job_unix:
     - run
 
 job_str_hello:
+  only:
+    - main
   variables:
     TEST_VAR: "All jobs can use this variable's value"
   script:
@@ -89,5 +95,11 @@ job_check_cache:
       } else {
         Write-Error -Message "Not found - $filePath"
       }
+  tags:
+    - win
+
+job_env:
+  stage: check_txt
+  script: 'ls env:'
   tags:
     - win
