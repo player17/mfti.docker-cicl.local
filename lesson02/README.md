@@ -92,12 +92,33 @@ check_interval = 0
 - регистрируем через wsl
 - https://github.com/RomNero/YouTube-Infos/blob/main/03-GitLabCICD.md
 - https://www.youtube.com/watch?v=jAIhhULc7YA&t=1262s
+- https://stackoverflow.com/questions/61105333/cannot-connect-to-the-docker-daemon-at-tcp-localhost2375-is-the-docker-daem
+- https://gitlab.com/gitlab-org/gitlab-runner/-/issues/6295
   - openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -nodes -subj '/CN=gitlab.local' -days 8000
-  - копируем их в ssl 
+    
+  - openssl genrsa -out ca.key 2048
+  - openssl req -new -x509 -days 365 -key ca.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=Acme Root CA" -out ca.crt
+  - openssl req -newkey rsa:2048 -nodes -keyout server.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=*.gitlab.local" -out server.csr
+  - openssl x509 -req -extfile <(printf "subjectAltName=DNS:gitlab.local") -days 365 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
+  
+  `openssl req -new -key certs/key.pem \
+  -subj "/CN=gitlab.local" \
+  -addext "subjectAltName = DNS:gitlab.local" \
+  -out certs/cert.csr \
+  -config certs/foo-bar_config.txt`
+
+  - копируем их в ssl в gitlab-config
     - cp /home/key.pem gitlab.local.key
     - cp /home/cert.pem gitlab.local.crt
     - `docker exec -it lesson02-gitlab-1 /bin/bash`
       - `gitlab-ctl restart`
+      
+    - ## Регистрация ранера
+    - https://www.youtube.com/watch?v=jAIhhULc7YA&t=1058s
+    - https://translated.turbopages.org/proxy_u/en-ru.ru.4e94ba44-62a8392b-2906648b-74722d776562/https/stackoverflow.com/questions/59422889/error-job-failed-system-failure-cannot-connect-to-the-docker-daemon-at-unix
+    - https://gitlab.com/gitlab-org/gitlab-runner/-/issues/28841
+    - docker ps
+    - docker exec -it lesson02-gitlab-runner-1 /bin/bash
       `
       SERVER=gitlab.local
       PORT=443
@@ -105,10 +126,21 @@ check_interval = 0
       # Create the certificates hierarchy expected by gitlab
       mkdir -p $(dirname "$CERTIFICATE")
       # Get the certificate in PEM format and store it
+      apt-get update && \
+        apt-get -y install sudo
+      
       openssl s_client -connect ${SERVER}:${PORT} -showcerts </dev/null 2>/dev/null | sed -e '/-----BEGIN/,/-----END/!d' | sudo tee "$CERTIFICATE" >/dev/null
+      openssl s_client -connect ${SERVER}:${PORT} -showcerts </dev/null 2>/dev/null | sed -e '/-----BEGIN/,/-----END/!d' | tee "$CERTIFICATE" >/dev/null
       # Register your runner
       gitlab-runner register --tls-ca-file="$CERTIFICATE"
+
+      gitlab-runner register --tls-ca-file="$CERTIFICATE" --docker-privileged=true
+        https://gitlab.local/
+        ubuntu:20.04
+      
       `
+      - `gitlab-runner start`
+      - `gitlab-runner restart`
 
 ### Переменные окружения env CI/CD
 > `script: 'ls env:' // Все переменные с префиксом CI_`
@@ -142,3 +174,27 @@ check_interval = 0
 https://www.youtube.com/watch?v=jAIhhULc7YA&t=1691s
 
 
+
+
+
+
+https://translated.turbopages.org/proxy_u/en-ru.ru.4e94ba44-62a8392b-2906648b-74722d776562/https/stackoverflow.com/questions/59422889/error-job-failed-system-failure-cannot-connect-to-the-docker-daemon-at-unix
+
+ХОСТ: 11.22.33.44
+
+GITLAB_IP: 55.66.77.88
+
+// Хост
+172.30.160.1
+
+// Runner
+172.18.0.3
+docker run -p 2375:2375 -d --name gitlab.runner --env DOCKER_HOST=tcp://172.30.160.1:2375 --restart always -v C:/temp/srv/gitlab-runner/config/:/etc/gitlab.runner -v C:/temp/var/run/docker.sock:/var/run/docker.sock gitlab/gitlab-runner:latest
+
+docker exec gitlab.runner gitlab-runner register -n --url=http://55.66.77.88:9000/ --registration-token=sEcrEttOkEnfOrgItlAb --description="Shared Docker Runner" --executor=docker --docker-image=docker --docker-privileged=true
+
+// GITLAB_IP:
+172.18.0.2
+
+
+netsh inter54654face portproxy add v4tov4 listenport=2375 listenaddress=172.30.160.1 connectport=2375 connectaddress=127.0.0.1

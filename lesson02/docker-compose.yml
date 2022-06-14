@@ -27,9 +27,16 @@ services:
     restart: always
     depends_on:
       - gitlab
+    environment:
+      DOCKER_HOST: 'tcp://172.30.160.1:2375'
+    ports:
+      - "2375:2375"
+      - "80:80"
+      - "22:22"
+      - "443:443"
     volumes:
       - gitlab-runner:/etc/gitlab-runner
-      - /run/docker.sock:/var/run/docker.sock
+      - //var/run/docker.sock:/var/run/docker.sock
     networks:
       - gitlab_net
 
