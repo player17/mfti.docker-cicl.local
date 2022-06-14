@@ -1,9 +1,8 @@
 http://gitlab.local/
-http://gitlab.local.de/
 https://gitlab.local/
-https://gitlab.local.de/
 ### Старт проекта через docker-compose.yml
 > `docker-compose up -d`
+> `docker-compose restart`
 
 ### Проброшенные папки
 \\wsl$\docker-desktop-data\data\docker\volumes\
@@ -89,6 +88,27 @@ check_interval = 0
 - `https://github.com/ElisDN/demo-project-manager/`
 - `docker-compose up -d`
 - `docker-compose restart`
+- docker-runner устанавливаем через compose
+- регистрируем через wsl
+- https://github.com/RomNero/YouTube-Infos/blob/main/03-GitLabCICD.md
+- https://www.youtube.com/watch?v=jAIhhULc7YA&t=1262s
+  - openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -nodes -subj '/CN=gitlab.local' -days 8000
+  - копируем их в ssl 
+    - cp /home/key.pem gitlab.local.key
+    - cp /home/cert.pem gitlab.local.crt
+    - `docker exec -it lesson02-gitlab-1 /bin/bash`
+      - `gitlab-ctl restart`
+      `
+      SERVER=gitlab.local
+      PORT=443
+      CERTIFICATE=/etc/gitlab-runner/certs/${SERVER}.crt
+      # Create the certificates hierarchy expected by gitlab
+      mkdir -p $(dirname "$CERTIFICATE")
+      # Get the certificate in PEM format and store it
+      openssl s_client -connect ${SERVER}:${PORT} -showcerts </dev/null 2>/dev/null | sed -e '/-----BEGIN/,/-----END/!d' | sudo tee "$CERTIFICATE" >/dev/null
+      # Register your runner
+      gitlab-runner register --tls-ca-file="$CERTIFICATE"
+      `
 
 ### Переменные окружения env CI/CD
 > `script: 'ls env:' // Все переменные с префиксом CI_`
@@ -100,11 +120,12 @@ check_interval = 0
 - `docker exec -it lesson02-gitlab-1 /bin/bash`  --> `cd etc/gitlab/` // Конфигируруем (см.видео), можно также через проброшеные volume \\wsl$\docker-desktop-data\data\docker\volumes\gitlab-config`
 - `gitlab.rb` // Конфигурирование GitLab
   - `https://docs.gitlab.com/omnibus/settings/ssl.html#lets-encrypt-integration`
-  - `external_url 'https://registry.gitlab.local' ... и другие параметры`
+  - `external_url 'https://registry.gitlab.local' ... и другие параметры, для коректной работы letsencrypt подключить для https' `
   - `docker exec -it lesson02-gitlab-1 /bin/bash`
     - `gitlab-ctl reconfigure`
     - `gitlab-ctl renew-le-certs`
     - `https://www.youtube.com/watch?v=Zx1MF5fDjzc` // установка сертификата в центр дов.источников
+
  
 ### Настройка локальных сертифкатов
 - https://habr.com/ru/company/globalsign/blog/435476/

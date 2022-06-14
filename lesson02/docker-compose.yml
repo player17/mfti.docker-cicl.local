@@ -19,10 +19,29 @@ services:
       - gitlab-config:/etc/gitlab
       - gitlab-logs:/var/log/gitlab
       - gitlab-data:/var/opt/gitlab
+    networks:
+      - gitlab_net
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    restart: always
+    depends_on:
+      - gitlab
+    volumes:
+      - gitlab-runner:/etc/gitlab-runner
+      - /run/docker.sock:/var/run/docker.sock
+    networks:
+      - gitlab_net
+
+networks:
+  gitlab_net:
+
 volumes:
   gitlab-config:
     external: true
   gitlab-logs:
     external: true
   gitlab-data:
+    external: true
+  gitlab-runner:
     external: true

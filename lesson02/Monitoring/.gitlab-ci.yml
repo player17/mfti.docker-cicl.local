@@ -60,7 +60,7 @@ job_str_hello:
   only:
     - main
   variables:
-    TEST_VAR: "Add Container Registery"
+    TEST_VAR: "Add Container Registery : 01"
   script:
     - cat file1.txt
     - echo "$TEST_VAR" and "$TEST_STR_INPUT"
