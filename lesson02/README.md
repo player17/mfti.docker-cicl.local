@@ -123,6 +123,7 @@ check_interval = 0
       SERVER=gitlab.local
       PORT=443
       CERTIFICATE=/etc/gitlab-runner/certs/${SERVER}.crt
+        cat /etc/gitlab-runner/certs/gitlab.local.crt
       # Create the certificates hierarchy expected by gitlab
       mkdir -p $(dirname "$CERTIFICATE")
       # Get the certificate in PEM format and store it
@@ -135,7 +136,7 @@ check_interval = 0
       gitlab-runner register --tls-ca-file="$CERTIFICATE"
 
       gitlab-runner register --tls-ca-file="$CERTIFICATE" --docker-privileged=true
-        https://gitlab.local/
+        http://gitlab.local/
         ubuntu:20.04
       
       `
@@ -154,6 +155,8 @@ check_interval = 0
   - `https://docs.gitlab.com/omnibus/settings/ssl.html#lets-encrypt-integration`
   - `external_url 'https://registry.gitlab.local' ... и другие параметры, для коректной работы letsencrypt подключить для https' `
   - `docker exec -it lesson02-gitlab-1 /bin/bash`
+    - `docker container inspect lesson02-gitlab-1 | grep "IPAddress"`
+    - `docker container inspect lesson02-gitlab-runner-1 | grep "IPAddress"`
     - `gitlab-ctl reconfigure`
     - `gitlab-ctl renew-le-certs`
     - `https://www.youtube.com/watch?v=Zx1MF5fDjzc` // установка сертификата в центр дов.источников
@@ -197,4 +200,66 @@ docker exec gitlab.runner gitlab-runner register -n --url=http://55.66.77.88:900
 172.18.0.2
 
 
-netsh inter54654face portproxy add v4tov4 listenport=2375 listenaddress=172.30.160.1 connectport=2375 connectaddress=127.0.0.1
+netsh interface portproxy add v4tov4 listenport=2375 listenaddress=172.30.160.1 connectport=2375 connectaddress=127.0.0.1
+
+
+
+curl http://gitlab.local/gitlab-instance-4831cf98/Monitoring.git
+
+curl http://gitlab.local/root/test.git/
+
+
+https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#define-an-image-from-a-private-container-registry
+DOCKER_AUTH_CONFIG + config.toml
+base 64 encoded username:password
+
+https://stackoverflow.com/questions/65962567/docker-login-before-pulling-image-for-gitlab-runner
+
+https://github.com/gitlabhq/gitlab-runner/blob/master/docs/faq/README.m
+https://www.reddit.com/r/gitlab/comments/m5oqpj/failed_to_connect_to_gitlab_local_instance_on/
+
+
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' lesson02-gitlab-1
+
+https://username:password@github.com/org/project.git
+172.18.0.2 gitlab.local
+
+[[runners]]
+...
+[runners.docker]
+...
+network_mode = "gitlab_net"
+
+[runners.docker]
+extra_hosts = ["gitlab.lab01.ng:172.16.10.100"]
+
+[[runners]]
+tls-ca-file = "/etc/gitlab-runner/certs/gitlab.local.crt"
+[runners.docker]
+    extra_hosts = ["gitlab.local:172.18.0.2"]
+    host = "tcp://172.30.160.1:2375"
+    volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock", "/etc/gitlab-runner/certs:/etc/gitlab-runner/certs"]
+    privileged = true
+
+
+docker exec [container-id or container-name] cat /etc/hosts
+
+`docker exec -it lesson02-gitlab-runner-1 /bin/bash`
+echo '172.18.0.2 gitlab.local' >> /etc/hosts
+  cd 
+
+      - `gitlab-runner start`
+      - `gitlab-runner restart`
+
+
+// HOST
+172.30.160.1
+// GITLAB_IP:
+172.18.0.2
+// Runner
+172.18.0.3
+
+
+https://username:password@github.com/org/project.git
+curl http://root:rootroot@gitlab.local
+curl http://root:rootroot@gitlab.local/http://gitlab.local/root/test/.git

@@ -29,11 +29,9 @@ services:
       - gitlab
     environment:
       DOCKER_HOST: 'tcp://172.30.160.1:2375'
+      GIT_SSL_NO_VERIFY: true
     ports:
       - "2375:2375"
-      - "80:80"
-      - "22:22"
-      - "443:443"
     volumes:
       - gitlab-runner:/etc/gitlab-runner
       - //var/run/docker.sock:/var/run/docker.sock
@@ -42,6 +40,7 @@ services:
 
 networks:
   gitlab_net:
+    driver: 'bridge'
 
 volumes:
   gitlab-config:
