@@ -39,6 +39,7 @@ check_interval = 0
     [runners.cache.gcs]
     [runners.cache.azure]
   [runners.docker]
+    network_mode = "gitlab_net"
     extra_hosts = ["gitlab.local:172.30.160.1"]
     host = "tcp://172.30.160.1:2375"
     tls_verify = false

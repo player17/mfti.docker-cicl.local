@@ -7,8 +7,8 @@ services:
     hostname: gitlab.local
     restart: always
     environment:
-      DOCKER_HOST: 'tcp://docker:2376'
-      DOCKER_CERT_PATH: '/certs/client'
+      DOCKER_HOST: 'tcp://192.168.0.101:2375'
+      DOCKER_CERT_PATH: '/etc/gitlab/ssl'
       DOCKER_TLS_VERIFY: 1
       COMPOSE_CONVERT_WINDOWS_PATHS: 1
     ports:
@@ -19,6 +19,7 @@ services:
       - gitlab-config:/etc/gitlab
       - gitlab-logs:/var/log/gitlab
       - gitlab-data:/var/opt/gitlab
+      - //var/run/docker.sock:/var/run/docker.sock
     networks:
       - gitlab_net
 
@@ -28,8 +29,12 @@ services:
     depends_on:
       - gitlab
     environment:
-      DOCKER_HOST: 'tcp://172.30.160.1:2375'
+      DOCKER_HOST: 'tcp://192.168.0.101:2375'
       GIT_SSL_NO_VERIFY: true
+      DOCKER_TLS_VERIFY: 1
+      COMPOSE_CONVERT_WINDOWS_PATHS: 1
+    extra_hosts:
+      - "gitlab.local:192.168.0.101"
     ports:
       - "2375:2375"
     volumes:
@@ -40,7 +45,6 @@ services:
 
 networks:
   gitlab_net:
-    driver: 'bridge'
 
 volumes:
   gitlab-config:

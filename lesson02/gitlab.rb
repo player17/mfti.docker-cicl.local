@@ -1,3 +1,15 @@
+external_url 'http://gitlab.local'
+registry_external_url 'http://registry.gitlab.local'
+mattermost_external_url 'http://mattermost.gitlab.local'
+#nginx['listen_port'] = 80
+#nginx['listen_https'] = false
+
+#letsencrypt['enable'] = true
+#letsencrypt['auto_renew_hour'] = "12"
+#letsencrypt['auto_renew_minute'] = "30"
+#letsencrypt['auto_renew_day_of_month'] = "*/7"
+#letsencrypt['auto_renew'] = false
+
 ## GitLab configuration settings
 ##! This file is generated during initial installation and **is not** modified
 ##! during upgrades.
@@ -30,7 +42,6 @@
 ##! address from AWS. For more details, see:
 ##! https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-retrieval.html
 # external_url 'GENERATED_EXTERNAL_URL'
-external_url 'http://gitlab.local'
 
 ## Roles for multi-instance GitLab
 ##! The default is to have no roles enabled, which results in GitLab running as an all-in-one instance.
@@ -774,7 +785,6 @@ external_url 'http://gitlab.local'
 ################################################################################
 
 # registry_external_url 'https://registry.example.com'
-registry_external_url 'http://registry.gitlab.local'
 
 ### Settings used by GitLab application
 # gitlab_rails['registry_enabled'] = true
@@ -1437,12 +1447,11 @@ registry_external_url 'http://registry.gitlab.local'
 
 ##! **Override only if you use a reverse proxy**
 ##! Docs: https://docs.gitlab.com/omnibus/settings/nginx.html#setting-the-nginx-listen-port
-nginx['listen_port'] = 80
+# nginx['listen_port'] = nil
 
 ##! **Override only if your reverse proxy internally communicates over HTTP**
 ##! Docs: https://docs.gitlab.com/omnibus/settings/nginx.html#supporting-proxied-ssl
 # nginx['listen_https'] = nil
-nginx['listen_https'] = false
 
 ##! **Override only if you use a reverse proxy with proxy protocol enabled**
 ##! Docs: https://docs.gitlab.com/omnibus/settings/nginx.html#configuring-proxy-protocol
@@ -1880,7 +1889,6 @@ nginx['listen_https'] = false
 ################################################################################
 
 # mattermost_external_url 'http://mattermost.example.com'
-mattermost_external_url 'http://mattermost.gitlab.local'
 
 # mattermost['enable'] = false
 # mattermost['username'] = 'mattermost'
@@ -2460,18 +2468,16 @@ mattermost_external_url 'http://mattermost.gitlab.local'
 # Let's Encrypt integration
 ################################################################################
 # letsencrypt['enable'] = nil
-#letsencrypt['enable'] = true
 # letsencrypt['contact_emails'] = [] # This should be an array of email addresses to add as contacts
 # letsencrypt['group'] = 'root'
 # letsencrypt['key_size'] = 2048
 # letsencrypt['owner'] = 'root'
 # letsencrypt['wwwroot'] = '/var/opt/gitlab/nginx/www'
 # See http://docs.gitlab.com/omnibus/settings/ssl.html#automatic-renewal for more on these sesttings
-#letsencrypt['auto_renew'] = true
-#letsencrypt['auto_renew_hour'] = "12"
+# letsencrypt['auto_renew'] = true
+# letsencrypt['auto_renew_hour'] = 0
 # letsencrypt['auto_renew_minute'] = nil # Should be a number or cron expression, if specified.
-#letsencrypt['auto_renew_minute'] = "30" # Should be a number or cron expression, if specified.
-#letsencrypt['auto_renew_day_of_month'] = "*/7"
+# letsencrypt['auto_renew_day_of_month'] = "*/4"
 # letsencrypt['auto_renew_log_directory'] = '/var/log/gitlab/lets-encrypt'
 
 ##! Turn off automatic init system detection. To skip init detection in
