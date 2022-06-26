@@ -110,7 +110,7 @@ letsencrypt['auto_renew'] = false
     volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock", "/etc/gitlab-runner/certs:/etc/gitlab-runner/certs"]
     tls_verify = true / false
 
-    // при https  убрать записть extra_hosts = ["gitlab.local:192.168.0.101"] и перегрузить runner
+    // при https  убрать записть extra_hosts = ["gitlab.local:192.168.0.101"] (но это не точно) + tls_verify = true и перегрузить runner
 
 
 # Пример конфига config.toml
@@ -149,3 +149,22 @@ letsencrypt['auto_renew_minute'] = "30"
 letsencrypt['auto_renew_day_of_month'] = "*/7"
 letsencrypt['auto_renew'] = false
 
+
+
+
+
+### Примеры с GIT
+git init
+git remote add origin https://gitlab.local/gitlab-instance-de0effa8/Monitoring.git
+git config http.sslVerify false
+git fetch origin
+git reset --mixed origin/main
+git add
+git commit -m "firts commit"
+git push -u origin master
+
+git checkout main
+git pull origin main --allow-unrelated-histories
+git merge master --allow-unrelated-histories
+
+git push -d origin master
