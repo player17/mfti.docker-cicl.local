@@ -122,8 +122,8 @@ shell = "pwsh"
 
 ` openssl genrsa -out ca.key 2048
 openssl req -new -x509 -days 365 -key ca.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=Acme Root CA" -out ca.crt
-openssl req -newkey rsa:2048 -nodes -keyout gitlab.local.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=gitlab.local" -out gitlab.local.csr
-openssl x509 -req -extfile <(printf "subjectAltName=DNS:gitlab.local") -days 365 -in gitlab.local.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out gitlab.local.crt
+openssl req -newkey rsa:2048 -nodes -keyout gitlab.local.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=*.gitlab.local" -out gitlab.local.csr
+openssl x509 -req -extfile <(printf "subjectAltName=DNS:gitlab.local,DNS:registry.gitlab.local,DNS:mattermost.gitlab.local") -days 365 -in gitlab.local.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out gitlab.local.crt
 `
 
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
@@ -153,10 +153,11 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
       SERVER=gitlab.local
       PORT=443
       CERTIFICATE=/etc/gitlab-runner/certs/${SERVER}.crt
-      cat /etc/gitlab-runner/certs/${SERVER}.crt
-      cat ${CERTIFICATE}
       # Create the certificates hierarchy expected by gitlab
       mkdir -p $(dirname "$CERTIFICATE")
+          cat /etc/gitlab-runner/certs/${SERVER}.crt
+          cat ${CERTIFICATE}
+
       # Get the certificate in PEM format and store it
       apt-get update && \
       apt-get -y install sudo
@@ -180,6 +181,8 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
 > `script: 'ls env:' // Все переменные с префиксом CI_`
 
 ### Локальный Dokerhub (Container registry)
+- `https://docs.gitlab.com/omnibus/settings/ssl.html`
+- `https://docs.gitlab.com/ee/user/packages/container_registry/`
 - `https://www.youtube.com/watch?v=G-WmX1um5cc`
 - `https://www.youtube.com/watch?v=n_21ya2MoKg`
 - `docker ps`
@@ -437,4 +440,16 @@ openssl req -out sslcert.csr -newkey rsa:2048 -nodes -keyout private.key -config
 openssl req -noout -text -in sslcert.csr | grep DNS
 
 
+// Ошибка runner Failed to remove network
+    apt-get install sudo
+    runner регистрировать через sudo
 
+    docker exec -it lesson02-gitlab-runner-1 /bin/bash
+    apt-get update
+    apt-get install -y docker.io
+    docker -v
+    gitlab-runner restart
+
+
+
+netsh interface portproxy add v4tov4 listenport=2375 listenaddress=192.168.0.101 connectport=2375 connectaddress=127.0.0.1

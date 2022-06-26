@@ -34,3 +34,82 @@ docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' less
 
 ### Локальные паки через WSL
 cd /mnt/d
+
+
+### Проблемы с SSl сертификатами (Проверять на репо докере, потом пробовать регать ранер чрезе https)
+
+- `docker exec -it lesson02-gitlab-1 /bin/bash`
+- `gitlab-ctl reconfigure`
+- `gitlab-ctl restart`
+
+
+` 
+openssl genrsa -out ca.key 2048
+openssl req -new -x509 -days 365 -key ca.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=Acme Root CA" -out ca.crt
+openssl req -newkey rsa:2048 -nodes -keyout gitlab.local.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=*.gitlab.local" -out gitlab.local.csr
+openssl x509 -req -extfile <(printf "subjectAltName=DNS:gitlab.local,DNS:registry.gitlab.local,DNS:mattermost.gitlab.local") -days 365 -in gitlab.local.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out gitlab.local.crt
+`
+- Добавить в корневые сертификаты
+- Перезагрузить докер
+
+`docker exec -it lesson02-gitlab-1 /bin/bash`
+- `gitlab-ctl reconfigure`
+- `gitlab-ctl restart`
+
+- `docker login registry.gitlab.local` проверка на корректность SSl
+
+// gitlab.rb
+external_url 'https://gitlab.local'
+registry_external_url 'https://registry.gitlab.local'
+mattermost_external_url 'https://mattermost.gitlab.local'
+#nginx['listen_port'] = 80
+#nginx['listen_https'] = false
+
+letsencrypt['enable'] = true
+letsencrypt['auto_renew_hour'] = "12"
+letsencrypt['auto_renew_minute'] = "30"
+letsencrypt['auto_renew_day_of_month'] = "*/7"
+letsencrypt['auto_renew'] = false
+
+
+### Регистрация ранера
+- runner регистрировать через sudo
+  
+- docker ps
+- docker exec -it lesson02-gitlab-runner-1 /bin/bash
+  SERVER=gitlab.local
+  PORT=443
+  CERTIFICATE=/etc/gitlab-runner/certs/${SERVER}.crt
+  cat ${CERTIFICATE}
+  openssl s_client -connect ${SERVER}:${PORT} -showcerts </dev/null 2>/dev/null | sed -e '/-----BEGIN/,/-----END/!d' | tee "$CERTIFICATE" >/dev/null
+
+  apt-get update
+  apt-get install -y sudo
+  apt-get install -y docker.io
+  sudo gitlab-runner register --tls-ca-file="$CERTIFICATE" --docker-privileged=true
+    sudo gitlab-runner register --docker-privileged=true
+    ubuntu:20.04
+  
+### Ошибка прослушивания Demons
+    если ошибка сокета перезагружаем комп, удаляем контейнеры (как понимаю сеть между контейнерами багуется)
+    и бегуна в контейнере через sudo устанавливает + gitlab-runner restart (tls_verify = false в  config.toml) 
+    и удалить из certmgr.msc все сертификаты связанные с gitlab
+
+    apt-get install sudo
+    runner регистрировать через sudo
+
+    docker exec -it lesson02-gitlab-runner-1 /bin/bash
+    apt-get update
+    apt-get install -y docker.io
+    docker -v
+    gitlab-runner restart
+
+    // config.toml
+    extra_hosts = ["gitlab.local:192.168.0.101"]
+    network_mode = "lesson02_gitlab_net"
+    volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock", "/etc/gitlab-runner/certs:/etc/gitlab-runner/certs"]
+    tls_verify = true / false
+
+    // при https  убрать записть extra_hosts = ["gitlab.local:192.168.0.101"] и перегрузить runner
+
+

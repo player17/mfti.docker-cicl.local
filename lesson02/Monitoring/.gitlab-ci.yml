@@ -1,15 +1,5 @@
-stages:
-  - build
-
-variables:
-  DOCKER_DRIVER: overlay
-  DOCKER_HOST: tcp://172.18.0.3:2375/
-  DOCKER_TLS_CERTDIR: ""
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  FF_GITLAB_REGISTRY_HELPER_IMAGE: 1
 job_unix:
-  stage: build
   script:
-    - echo "555111"
+    - echo "555000111"
   tags:
     - doc

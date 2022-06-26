@@ -1,14 +1,14 @@
-external_url 'http://gitlab.local'
-registry_external_url 'http://registry.gitlab.local'
-mattermost_external_url 'http://mattermost.gitlab.local'
+external_url 'https://gitlab.local'
+registry_external_url 'https://registry.gitlab.local'
+mattermost_external_url 'https://mattermost.gitlab.local'
 #nginx['listen_port'] = 80
 #nginx['listen_https'] = false
 
-#letsencrypt['enable'] = true
-#letsencrypt['auto_renew_hour'] = "12"
-#letsencrypt['auto_renew_minute'] = "30"
-#letsencrypt['auto_renew_day_of_month'] = "*/7"
-#letsencrypt['auto_renew'] = false
+letsencrypt['enable'] = true
+letsencrypt['auto_renew_hour'] = "12"
+letsencrypt['auto_renew_minute'] = "30"
+letsencrypt['auto_renew_day_of_month'] = "*/7"
+letsencrypt['auto_renew'] = false
 
 ## GitLab configuration settings
 ##! This file is generated during initial installation and **is not** modified
