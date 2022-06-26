@@ -93,6 +93,7 @@ letsencrypt['auto_renew'] = false
 ### Ошибка прослушивания Demons
     если ошибка сокета перезагружаем комп, удаляем контейнеры (как понимаю сеть между контейнерами багуется)
     и бегуна в контейнере через sudo устанавливает + gitlab-runner restart (tls_verify = true / false в  config.toml) 
+    и tls-ca-file = "/etc/gitlab-runner/certs/gitlab.local.crt" в config.toml
     и удалить из certmgr.msc все сертификаты связанные с gitlab + кеш в браузере
 
     apt-get install sudo
