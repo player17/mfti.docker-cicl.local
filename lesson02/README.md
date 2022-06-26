@@ -113,3 +113,39 @@ letsencrypt['auto_renew'] = false
     // при https  убрать записть extra_hosts = ["gitlab.local:192.168.0.101"] и перегрузить runner
 
 
+# Пример конфига config.toml
+[[runners]]
+name = "doc"
+url = "https://gitlab.local/"
+token = "gpEaYv4ZaN6rUA5UeEiQ"
+tls-ca-file = "/etc/gitlab-runner/certs/gitlab.local.crt"
+executor = "docker"
+[runners.custom_build_dir]
+[runners.cache]
+[runners.cache.s3]
+[runners.cache.gcs]
+[runners.cache.azure]
+[runners.docker]
+tls_verify = true
+image = "ubuntu:20.04"
+privileged = true
+disable_entrypoint_overwrite = false
+oom_kill_disable = false
+disable_cache = false
+shm_size = 0
+volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock", "/etc/gitlab-runner/certs:/etc/gitlab-runner/certs"]
+network_mode = "lesson02_gitlab_net"
+
+# Пример конфига gitlab.rb
+external_url 'https://gitlab.local'
+registry_external_url 'https://registry.gitlab.local'
+mattermost_external_url 'https://mattermost.gitlab.local'
+#nginx['listen_port'] = 80
+#nginx['listen_https'] = false
+
+letsencrypt['enable'] = true
+letsencrypt['auto_renew_hour'] = "12"
+letsencrypt['auto_renew_minute'] = "30"
+letsencrypt['auto_renew_day_of_month'] = "*/7"
+letsencrypt['auto_renew'] = false
+
